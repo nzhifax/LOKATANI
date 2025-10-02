@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FlatList,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,6 +21,10 @@ export default function Home() {
   const { theme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState<'none' | 'lowToHigh' | 'highToLow' | 'latest'>(
+    'none'
+  );
+  const [isSortModalVisible, setSortModalVisible] = useState(false);
 
   const categories: Array<{ key: ProductCategory | 'all'; label: string }> = [
     { key: 'all', label: t('home.allProducts') },
@@ -31,24 +36,32 @@ export default function Home() {
   const filteredProducts = useMemo(() => {
     let products = dummyProducts;
 
-    // Filter by category
     if (selectedCategory !== 'all') {
       products = products.filter((p) => p.category === selectedCategory);
     }
 
-    // Filter by search
     if (searchQuery) {
-      products = products.filter((p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.nameId.toLowerCase().includes(searchQuery.toLowerCase())
+      products = products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.nameId.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
+    if (sortOption === 'lowToHigh') {
+      products = [...products].sort((a, b) => a.price - b.price);
+    } else if (sortOption === 'highToLow') {
+      products = [...products].sort((a, b) => b.price - a.price);
+    } else if (sortOption === 'latest') {
+      products = [...products].sort((a, b) => b.createdAt - a.createdAt);
+    }
+
     return products;
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, sortOption]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
+      {/* Header */}
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.primary }]}>{t('common.appName')}</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
@@ -56,7 +69,13 @@ export default function Home() {
         </Text>
       </View>
 
-      <View style={[styles.searchContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+      {/* Search */}
+      <View
+        style={[
+          styles.searchContainer,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
         <Ionicons name="search-outline" size={20} color={theme.textSecondary} />
         <TextInput
           style={[styles.searchInput, { color: theme.text }]}
@@ -72,43 +91,63 @@ export default function Home() {
         )}
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesContainer}
-      >
-        {categories.map((category) => (
-          <TouchableOpacity
-            key={category.key}
-            style={[
-              styles.categoryButton,
-              {
-                backgroundColor:
-                  selectedCategory === category.key ? theme.primary : theme.surface,
-                borderColor: theme.border,
-              },
-            ]}
-            onPress={() => setSelectedCategory(category.key)}
-          >
-            <Text
+      {/* Categories + Sort */}
+      <View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
+        >
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.key}
               style={[
-                styles.categoryText,
+                styles.categoryButton,
                 {
-                  color: selectedCategory === category.key ? '#FFFFFF' : theme.text,
+                  backgroundColor:
+                    selectedCategory === category.key ? theme.primary : theme.surface,
+                  borderColor: theme.border,
                 },
               ]}
+              onPress={() => setSelectedCategory(category.key)}
             >
-              {category.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                style={[
+                  styles.categoryText,
+                  {
+                    color: selectedCategory === category.key ? '#FFFFFF' : theme.text,
+                  },
+                ]}
+              >
+                {category.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
+        {/* Sort Button */}
+        <View style={styles.sortContainer}>
+          <TouchableOpacity
+            style={[styles.sortButton, { borderColor: theme.border }]}
+            onPress={() => setSortModalVisible(true)}
+          >
+            <Ionicons name="swap-vertical-outline" size={18} color={theme.text} />
+            <Text style={[styles.sortText, { color: theme.text }]}>{t('sort')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Products List */}
       <FlatList
         data={filteredProducts}
         renderItem={({ item }) => <ProductCard product={item} />}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingBottom: 16,
+          paddingTop: 8, // biar ga ketiban category
+          marginTop: 8,
+        }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -119,27 +158,56 @@ export default function Home() {
           </View>
         }
       />
+
+      {/* Sort Modal */}
+      <Modal visible={isSortModalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>{t('sortBy')}</Text>
+            {[
+              { key: 'lowToHigh', label: t('priceLowToHigh') },
+              { key: 'highToLow', label: t('priceHighToLow') },
+              { key: 'latest', label: t('latest') },
+            ].map((option) => (
+              <TouchableOpacity
+                key={option.key}
+                style={styles.modalOption}
+                onPress={() => {
+                  setSortOption(option.key as any);
+                  setSortModalVisible(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.modalOptionText,
+                    {
+                      color: sortOption === option.key ? theme.primary : theme.text,
+                      fontWeight: sortOption === option.key ? '700' : '400',
+                    },
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setSortModalVisible(false)}
+            >
+              <Text style={{ color: theme.error }}>{t('close')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-  },
+  container: { flex: 1 },
+  header: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 16 },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 4 },
+  subtitle: { fontSize: 14 },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -150,38 +218,53 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 48,
   },
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-    fontSize: 16,
-  },
+  searchInput: { flex: 1, marginLeft: 8, fontSize: 16 },
   categoriesContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-    gap: 8,
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginBottom: 12, // dikurangi biar ga ketiban
+    flexDirection: 'row',
   },
   categoryButton: {
-    paddingVertical: 10,
     paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
     marginRight: 8,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  list: {
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-  emptyContainer: {
-    alignItems: 'center',
+    minWidth: 90,
     justifyContent: 'center',
-    paddingVertical: 60,
+    alignItems: 'center',
   },
-  emptyText: {
-    fontSize: 16,
-    marginTop: 16,
+  categoryText: { fontSize: 14, fontWeight: '500' },
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginHorizontal: 20,
+    marginBottom: 12,
   },
+  sortButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  sortText: { marginLeft: 6, fontSize: 14, fontWeight: '500' },
+  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
+  emptyText: { fontSize: 16, marginTop: 16 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 20,
+  },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
+  modalOption: { paddingVertical: 12 },
+  modalOptionText: { fontSize: 16 },
+  closeButton: { marginTop: 20, alignItems: 'center' },
 });

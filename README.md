@@ -7,7 +7,7 @@ Aplikasi marketplace React Native untuk transaksi hasil panen antara petani dan 
 ### 1. Autentikasi Pengguna
 - ✅ Registrasi pengguna (Petani & Pembeli)
 - ✅ Login dengan email & password
-- ✅ Logout
+- ✅ Logout user
 - ✅ Data tersimpan lokal dengan AsyncStorage
 
 ### 2. Multi Bahasa (i18n)
