@@ -153,7 +153,7 @@ export default function Profile() {
         <View style={styles.section}>
           <Button
             title={t("profile.editProfile")}
-            onPress={() => router.push("/product/editprofile")}
+            onPress={() => router.push("/editprofile")}
           />
         </View>
 
