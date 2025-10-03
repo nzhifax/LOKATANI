@@ -165,9 +165,9 @@ export default function Home() {
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
             <Text style={[styles.modalTitle, { color: theme.text }]}>{t('sortBy')}</Text>
             {[
-              { key: 'lowToHigh', label: t('priceLowToHigh') },
-              { key: 'highToLow', label: t('priceHighToLow') },
-              { key: 'latest', label: t('latest') },
+              { key: 'lowToHigh', label: t('Price: Low To High') },
+              { key: 'highToLow', label: t('Price: High To Low') },
+              { key: 'latest', label: t('Latest') },
             ].map((option) => (
               <TouchableOpacity
                 key={option.key}
