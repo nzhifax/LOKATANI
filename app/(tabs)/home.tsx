@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   categoriesContainer: {
     paddingLeft: 20,
     paddingRight: 20,
-    marginBottom: 12, // dikurangi biar ga ketiban
+    marginBottom: 12, 
     flexDirection: 'row',
   },
   categoryButton: {
