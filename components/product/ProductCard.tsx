@@ -14,7 +14,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { theme } = useTheme();
   const router = useRouter();
   const { i18n } = useTranslation();
-  
+
   const isIndonesian = i18n.language === 'id';
   const productName = isIndonesian ? product.nameId : product.name;
 
@@ -29,22 +29,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       activeOpacity={0.7}
     >
       <Image
-        source={{ uri: product.image }}
+        source={
+          product.image
+            ? { uri: product.image }
+            : { uri: 'https://via.placeholder.com/300' } // fallback kalau tidak ada gambar
+        }
         style={styles.image}
         resizeMode="cover"
       />
       <View style={styles.content}>
+        {/* Nama Produk */}
         <Text style={[styles.name, { color: theme.text }]} numberOfLines={1}>
           {productName}
         </Text>
+
+        {/* Nama Petani */}
         <Text style={[styles.farmer, { color: theme.textSecondary }]} numberOfLines={1}>
           <Ionicons name="person-outline" size={12} /> {product.farmer.name}
         </Text>
+
+        {/* Harga & Stok */}
         <View style={styles.footer}>
           <Text style={[styles.price, { color: theme.primary }]}>
             Rp {product.price.toLocaleString('id-ID')}
             <Text style={[styles.unit, { color: theme.textSecondary }]}>/{product.unit}</Text>
           </Text>
+
           {product.stock > 0 ? (
             <View style={[styles.stockBadge, { backgroundColor: theme.success + '20' }]}>
               <Text style={[styles.stockText, { color: theme.success }]}>
@@ -67,8 +77,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 16,
-    elevation: 2,
-    shadowColor: '#000',
+    elevation: 2, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

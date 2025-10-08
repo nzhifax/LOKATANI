@@ -15,7 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../components/common/Button';
 import { useCart } from '../../contexts/CartContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { dummyProducts } from '../../data/products';
+import { useProducts } from '../../contexts/ProductContext';
+// import { dummyProducts } from '../../data/products';
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,7 +26,10 @@ export default function ProductDetail() {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
 
-  const product = dummyProducts.find((p) => p.id === id);
+  // const product = dummyProducts.find((p) => p.id === id);
+  const { products } = useProducts();
+const product = products.find((p) => p.id.toString() === id);
+
 
   if (!product) {
     return (
