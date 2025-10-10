@@ -1,21 +1,21 @@
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../../components/common/Button';
-import { Input } from '../../components/common/Input';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../components/common/Button";
+import { Input } from "../../components/common/Input";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -23,50 +23,62 @@ export default function Login() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert(t('common.error'), t('auth.fillAllFields'));
+      Alert.alert(t("common.error"), t("auth.fillAllFields"));
       return;
     }
 
-    setLoading(true);
-    const result = await login(email, password);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const result = await login(email, password);
+      setLoading(false);
 
-    if (result.success) {
-      router.replace('/(tabs)/home');
-    } else {
-      Alert.alert(t('common.error'), t('auth.loginError'));
+      if (result.success && result.user) {
+        // Ambil role dari result.user (karena login mengembalikan user object)
+        const userRole = result.user.userType;
+
+        if (userRole === "farmer") {
+          router.replace("/(tabsFarmer)/homeFarmer");
+        } else if (userRole === "buyer") {
+          router.replace("/(tabsBuyer)/homeBuyer");
+        } else {
+          Alert.alert("Error", "Role tidak dikenali. Pastikan akun Anda memiliki role yang benar.");
+        }
+      } else {
+        Alert.alert(t("common.error"), result.message || t("auth.loginError"));
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Login error:", error);
+      Alert.alert("Error", "Terjadi kesalahan saat login.");
     }
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.primary }]}>
-              {t('common.appName')}
+              {t("common.appName")}
             </Text>
             <Text style={[styles.subtitle, { color: theme.text }]}>
-              {t('auth.welcomeBack')}
+              {t("auth.welcomeBack")}
             </Text>
           </View>
 
           <View style={styles.form}>
             <Input
-              label={t('auth.email')}
-              placeholder={t('auth.email')}
+              label={t("auth.email")}
+              placeholder={t("auth.email")}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -74,15 +86,15 @@ export default function Login() {
               icon="mail-outline"
             />
             <Input
-              label={t('auth.password')}
-              placeholder={t('auth.password')}
+              label={t("auth.password")}
+              placeholder={t("auth.password")}
               value={password}
               onChangeText={setPassword}
               isPassword
               icon="lock-closed-outline"
             />
             <Button
-              title={t('auth.login')}
+              title={t("auth.login")}
               onPress={handleLogin}
               loading={loading}
               style={styles.loginButton}
@@ -91,11 +103,11 @@ export default function Login() {
 
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: theme.textSecondary }]}>
-              {t('auth.dontHaveAccount')}
+              {t("auth.dontHaveAccount")}
             </Text>
-            <TouchableOpacity onPress={() => router.push('/auth/register')}>
+            <TouchableOpacity onPress={() => router.push("/auth/register")}>
               <Text style={[styles.link, { color: theme.primary }]}>
-                {' '}{t('auth.register')}
+                {" "}{t("auth.register")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -115,15 +127,15 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   header: {
     marginBottom: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   subtitle: {
@@ -136,15 +148,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   footerText: {
     fontSize: 14,
   },
   link: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

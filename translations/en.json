@@ -34,7 +34,8 @@
     "loginError": "Invalid email or password",
     "registerError": "Registration failed",
     "passwordMismatch": "Passwords do not match",
-    "fillAllFields": "Please fill all fields"
+    "fillAllFields": "Please fill all fields",
+    "address": "Address"
   },
   "home": {
     "title": "Home",
@@ -111,6 +112,62 @@
     "changePhoto": "Change Photo",
     "saveChanges": "Save Changes",
     "updateSuccess": "Profile updated successfully!",
-    "updateError": "Failed to update profile"
-  }
+    "updateError": "Failed to update profile",
+    "personalInformation": "Personal Information",
+    "complaint": "Submit Complaint"
+  },
+  "homeFarmer":{
+    "hello": "Hello",
+    "farmer": "Farmer",
+    "products": "Products",
+    "totalOrders": "Total Orders",
+    "pending": "Pending",
+    "quickActions": "Quick Actions",
+    "addNewProduct": "Add New Product",
+    "listNewProduct": "List a new product for sale",
+    "viewReports": "View Reports",
+    "checkPerformance": "Check your sales performance"
+  },
+  "homeBuyer":{
+    "hello": "Hello",
+    "buyer": "Buyer",
+    "searchProducts": "Search products...",
+    "noProducts": "No products found",
+    "stock": "Stock",
+    "error": "Error",
+    "success": "Success",
+    "failedToLoadProducts": "Failed to load products",
+    "addedToCart": "added to cart",
+    "failedToAddToCart": "Failed to add to cart"
+  },
+  "history": {
+    "title": "Transaction History",
+    "empty": "No transactions yet",
+    "clear": "Clear History"
+  },
+  "complaint": {
+  "formTitle": "Complaint Form",
+  "empty": "No complaints yet",
+  "emptySub": "Press the + button to create a new complaint",
+  "createTitle": "Create Complaint",
+  "editTitle": "Edit Complaint",
+  "upload": "Upload Proof (optional)",
+  "placeholder": "Describe your issue...",
+  "submit": "Submit Complaint",
+  "update": "Update Complaint",
+  "status": "Status",
+  "error": "Error",
+  "loadError": "Failed to load complaints",
+  "saveError": "Failed to save complaint",
+  "fillDesc": "Please fill in the complaint description.",
+  "sent": "Complaint sent",
+  "updated": "Complaint updated",
+  "deleted": "Complaint deleted",
+  "deleteTitle": "Delete Complaint",
+  "deleteConfirm": "Are you sure you want to delete this complaint?",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "permissionTitle": "Permission Required",
+  "permissionDesc": "Please allow gallery access to choose an image."
+}
 }

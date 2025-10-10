@@ -34,7 +34,8 @@
     "loginError": "Email atau kata sandi salah",
     "registerError": "Pendaftaran gagal",
     "passwordMismatch": "Kata sandi tidak cocok",
-    "fillAllFields": "Harap isi semua kolom"
+    "fillAllFields": "Harap isi semua kolom",
+    "address": "Alamat"
   },
   "home": {
     "title": "Beranda",
@@ -111,6 +112,62 @@
     "changePhoto": "Ubah Foto",
     "saveChanges": "Simpan Perubahan",
     "updateSuccess": "Profil berhasil diperbarui!",
-    "updateError": "Gagal memperbarui profil"
-  }
+    "updateError": "Gagal memperbarui profil",
+    "personalInformation": "Informasi Pribadi",
+     "complaint": "Ajukan Aduan"
+  },
+    "homeFarmer": {
+    "hello": "Halo",
+    "farmer": "Petani",
+    "products": "Produk",
+    "totalOrders": "Total Pesanan",
+    "pending": "Menunggu",
+    "quickActions": "Aksi Cepat",
+    "addNewProduct": "Tambah Produk Baru",
+    "listNewProduct": "Daftarkan produk untuk dijual",
+    "viewReports": "Lihat Laporan",
+    "checkPerformance": "Cek performa penjualan"
+  },
+  "homeBuyer": {
+    "hello": "Halo",
+    "buyer": "Pembeli",
+    "searchProducts": "Cari produk...",
+    "noProducts": "Tidak ada produk ditemukan",
+    "stock": "Stok",
+    "error": "Kesalahan",
+    "success": "Berhasil",
+    "failedToLoadProducts": "Gagal memuat produk",
+    "addedToCart": "telah ditambahkan ke keranjang",
+    "failedToAddToCart": "Gagal menambahkan ke keranjang"
+  },
+  "history": {
+    "title": "Riwayat Transaksi",
+    "empty": "Belum ada transaksi",
+    "clear": "Hapus Riwayat"
+  },
+  "complaint": {
+  "formTitle": "Form Aduan",
+  "empty": "Belum ada aduan",
+  "emptySub": "Tekan tombol + untuk membuat aduan baru",
+  "createTitle": "Buat Aduan",
+  "editTitle": "Edit Aduan",
+  "upload": "Unggah Bukti (opsional)",
+  "placeholder": "Tuliskan kendala Anda...",
+  "submit": "Kirim Aduan",
+  "update": "Perbarui Aduan",
+  "status": "Status",
+  "error": "Terjadi Kesalahan",
+  "loadError": "Gagal memuat data aduan",
+  "saveError": "Gagal menyimpan data aduan",
+  "fillDesc": "Harap isi deskripsi aduan.",
+  "sent": "Aduan dikirim",
+  "updated": "Aduan diperbarui",
+  "deleted": "Aduan dihapus",
+  "deleteTitle": "Hapus Aduan",
+  "deleteConfirm": "Yakin ingin menghapus aduan ini?",
+  "delete": "Hapus",
+  "cancel": "Batal",
+  "permissionTitle": "Izin Diperlukan",
+  "permissionDesc": "Izinkan akses galeri untuk memilih gambar bukti."
+}
 }

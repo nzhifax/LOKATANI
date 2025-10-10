@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from '../translations/en.json';
 import id from '../translations/id.json';
@@ -23,7 +23,7 @@ const languageDetector = {
     try {
       await AsyncStorage.setItem(LANGUAGE_KEY, language);
     } catch (error) {
-      // console.error('Error saving language:', error);
+      console.log('Gagal menyimpan bahasa:', error);
     }
   },
 };

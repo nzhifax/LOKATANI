@@ -5,6 +5,7 @@ export const lightTheme = {
   background: '#FFFFFF',
   surface: '#F3F4F6',
   surfaceLight: '#F9FAFB',
+  card: '#FFFFFF', 
   text: '#1F2937',
   textSecondary: '#6B7280',
   textLight: '#9CA3AF',
@@ -13,6 +14,8 @@ export const lightTheme = {
   success: '#10B981',
   warning: '#F59E0B',
   info: '#3B82F6',
+  inputBackground: "#F2F2F2",
+  shadow: "rgba(0, 0, 0, 0.1)",
 };
 
 export const darkTheme = {
@@ -22,7 +25,7 @@ export const darkTheme = {
   background: '#000000',
   surface: '#1F2937',
   surfaceLight: '#374151',
-  text: '#FFFFFF',
+  card: '#1E293B', 
   textSecondary: '#9CA3AF',
   textLight: '#6B7280',
   border: '#374151',
@@ -30,6 +33,8 @@ export const darkTheme = {
   success: '#10B981',
   warning: '#F59E0B',
   info: '#3B82F6',
+  inputBackground: "#2C2C2C",
+  shadow: "rgba(0, 0, 0, 0.4)",
 };
 
 export type Theme = typeof lightTheme;

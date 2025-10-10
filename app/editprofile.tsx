@@ -1,6 +1,8 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import MapView, { Marker, MapPressEvent } from "react-native-maps";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -19,7 +21,7 @@ import { useTheme } from "../contexts/ThemeContext";
 export default function EditProfileScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { user } = useAuth(); // ✅ ambil data user dari AuthContext
+  const { user } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +31,10 @@ export default function EditProfileScreen() {
   const [gender, setGender] = useState("male");
   const [avatar, setAvatar] = useState<string | null>(null);
 
-  // isi default dari user
+  // State untuk alamat dan koordinat
+  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+
   useEffect(() => {
     if (user) {
       setName(user.fullName || "");
@@ -37,13 +42,24 @@ export default function EditProfileScreen() {
       setPhone(user.phone || "");
       if (user.dob) setDob(new Date(user.dob));
       if (user.gender) setGender(user.gender);
-      if (user.avatar) setAvatar(user.avatar);
+      if (user.photo) setAvatar(user.photo);
+      if (user.address) setAddress(user.address);
+      if (user.location)
+        setLocation({ latitude: user.location.latitude, longitude: user.location.longitude });
     }
   }, [user]);
 
   const handleSave = () => {
-    console.log("Profile Saved:", { name, email, phone, dob, gender, avatar });
-    // kalau ada updateUser dari AuthContext bisa dipakai di sini
+    console.log("Profile Saved:", {
+      name,
+      email,
+      phone,
+      dob,
+      gender,
+      avatar,
+      address,
+      location,
+    });
     router.back();
   };
 
@@ -61,6 +77,43 @@ export default function EditProfileScreen() {
 
     if (!result.canceled) {
       setAvatar(result.assets[0].uri);
+    }
+  };
+
+  // Ambil lokasi otomatis
+  const getCurrentLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      alert("Izin lokasi diperlukan untuk mendeteksi alamat otomatis.");
+      return;
+    }
+
+    const loc = await Location.getCurrentPositionAsync({});
+    const coords = {
+      latitude: loc.coords.latitude,
+      longitude: loc.coords.longitude,
+    };
+    setLocation(coords);
+
+    // Ambil alamat dari koordinat
+    const geocode = await Location.reverseGeocodeAsync(coords);
+    if (geocode[0]) {
+      const { street, district, city, region } = geocode[0];
+      const formatted = `${street || ""} ${district || ""}, ${city || ""}, ${region || ""}`;
+      setAddress(formatted.trim());
+    }
+  };
+
+  // Kalau user tap di peta
+  const handleMapPress = async (e: MapPressEvent) => {
+    const coords = e.nativeEvent.coordinate;
+    setLocation(coords);
+
+    const geocode = await Location.reverseGeocodeAsync(coords);
+    if (geocode[0]) {
+      const { street, district, city, region } = geocode[0];
+      const formatted = `${street || ""} ${district || ""}, ${city || ""}, ${region || ""}`;
+      setAddress(formatted.trim());
     }
   };
 
@@ -82,9 +135,7 @@ export default function EditProfileScreen() {
           style={[styles.changePhotoBtn, { backgroundColor: theme.surface }]}
           onPress={pickImage}
         >
-          <Text style={[styles.changePhotoText, { color: theme.text }]}>
-            Change Photo
-          </Text>
+          <Text style={[styles.changePhotoText, { color: theme.text }]}>Change Photo</Text>
         </TouchableOpacity>
       </View>
 
@@ -118,6 +169,42 @@ export default function EditProfileScreen() {
           value={phone}
           onChangeText={setPhone}
         />
+
+        {/* Address + Map */}
+        <Text style={[styles.label, { color: theme.text }]}>Address</Text>
+        <View style={styles.addressRow}>
+          <TextInput
+            style={[
+              styles.addressInput,
+              { color: theme.text, borderColor: theme.primary + "40" },
+            ]}
+            placeholder="Enter your address"
+            placeholderTextColor={theme.textSecondary}
+            value={address}
+            onChangeText={setAddress}
+          />
+          <TouchableOpacity
+            style={[styles.locateButton, { backgroundColor: theme.primary }]}
+            onPress={getCurrentLocation}
+          >
+            <Text style={{ color: "#fff", fontSize: 18 }}>📍</Text>
+          </TouchableOpacity>
+        </View>
+
+        {location && (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+            onPress={handleMapPress}
+          >
+            <Marker coordinate={location} />
+          </MapView>
+        )}
 
         <Text style={[styles.label, { color: theme.text }]}>Date of Birth</Text>
         <TouchableOpacity
@@ -209,6 +296,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 16,
     fontSize: 15,
+  },
+  addressRow: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
+  addressInput: {
+    flex: 1,
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 10,
+    fontSize: 15,
+  },
+  locateButton: {
+    marginLeft: 8,
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  map: {
+    width: "100%",
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   dateButton: {
     borderWidth: 1,

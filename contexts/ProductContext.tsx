@@ -30,8 +30,56 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     (async () => {
-      const stored = await AsyncStorage.getItem("products");
-      if (stored) setProducts(JSON.parse(stored));
+      try {
+        const stored = await AsyncStorage.getItem("products");
+        if (stored) {
+          setProducts(JSON.parse(stored));
+        } else {
+          // Dummy data awal 
+          const initialProducts: Product[] = [
+            {
+              id: "1",
+              name: "Fresh Carrot",
+              nameId: "Wortel Segar",
+              price: 8000,
+              category: "vegetables",
+              createdAt: Date.now(),
+              image: "https://cdn-icons-png.flaticon.com/512/2909/2909767.png",
+              unit: "kg",
+              stock: 20,
+              farmer: "Pak Budi",
+            },
+            {
+              id: "2",
+              name: "Premium Rice",
+              nameId: "Beras Premium",
+              price: 12000,
+              category: "grains",
+              createdAt: Date.now(),
+              image: "https://cdn-icons-png.flaticon.com/512/3480/3480515.png",
+              unit: "kg",
+              stock: 50,
+              farmer: "Bu Sari",
+            },
+            {
+              id: "3",
+              name: "Banana",
+              nameId: "Pisang",
+              price: 6000,
+              category: "fruits",
+              createdAt: Date.now(),
+              image: "https://cdn-icons-png.flaticon.com/512/415/415733.png",
+              unit: "sisir",
+              stock: 30,
+              farmer: "Pak Wawan",
+            },
+          ];
+          setProducts(initialProducts);
+          await AsyncStorage.setItem("products", JSON.stringify(initialProducts));
+        }
+      } catch (error) {
+        console.error("❌ Error loading products:", error);
+      }
     })();
   }, []);
 
